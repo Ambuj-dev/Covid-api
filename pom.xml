@@ -20,23 +20,6 @@
 		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
 		<org.projectlombok.version>1.18.16</org.projectlombok.version>
 		<jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
-		
-		<jacoco-argLine-common-property-name>argLine</jacoco-argLine-common-property-name>
-        <jacoco-execution-data-file-parent-dir>${project.build.directory}/coverage-reports/jacoco</jacoco-execution-data-file-parent-dir>
-        <jacoco-reports-parent-dir>${project.reporting.outputDirectory}/coverage-reports/jacoco</jacoco-reports-parent-dir>
-
-        <jacoco-execution-ut-argLine-property-name>${jacoco-argLine-common-property-name}</jacoco-execution-ut-argLine-property-name>
-        <jacoco-execution-ut-data-filename>jacoco-ut.exec</jacoco-execution-ut-data-filename>
-        <jacoco-execution-ut-data-file>${jacoco-execution-data-file-parent-dir}/${jacoco-execution-ut-data-filename}</jacoco-execution-ut-data-file>
-        <jacoco-execution-ut-reports-dir>${jacoco-reports-parent-dir}/jacoco-ut</jacoco-execution-ut-reports-dir>
-
-        <jacoco-execution-it-argLine-property-name>${jacoco-argLine-common-property-name}</jacoco-execution-it-argLine-property-name>
-        <jacoco-execution-it-data-filename>jacoco-it.exec</jacoco-execution-it-data-filename>
-        <jacoco-execution-it-data-file>${jacoco-execution-data-file-parent-dir}/${jacoco-execution-it-data-filename}</jacoco-execution-it-data-file>
-        <jacoco-execution-it-reports-dir>${jacoco-reports-parent-dir}/jacoco-it</jacoco-execution-it-reports-dir>
-
-        <jacoco-execution-all-tests-data-file>${jacoco-execution-data-file-parent-dir}/jacoco-all-ut-it.exec</jacoco-execution-all-tests-data-file>
-        <jacoco-execution-all-tests-reports-dir>${jacoco-reports-parent-dir}/jacoco-all-ut-it</jacoco-execution-all-tests-reports-dir>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -101,127 +84,25 @@
 	<build>
 		<plugins>
 			<plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco-maven-plugin.version}</version>
-                <executions>
-                    <!--
-                        Prepares the property pointing to the JaCoCo runtime agent which
-                        is passed as VM argument when the Surefire plugin is executed.
-                    -->
-                    <execution>
-                        <id>pre-unit-test</id>
-                        <phase>process-test-classes</phase>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Sets the path to the file which contains the execution data. -->
-                            <destFile>${jacoco-execution-ut-data-file}</destFile>
-                            <!--
-                                Sets the name of the property containing the settings for JaCoCo runtime agent.
-                            -->
-                            <propertyName>${jacoco-execution-ut-argLine-property-name}</propertyName>
-                            <skip>${skipUnitTests}</skip>
-                        </configuration>
-                    </execution>
-                    <!--
-                        Ensures that the code coverage report for unit tests is created after
-                        unit tests have been run.
-                    -->
-                    <execution>
-                        <id>post-unit-test</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Sets the path to the file which contains the execution data. -->
-                            <dataFile>${jacoco-execution-ut-data-file}</dataFile>
-                            <!-- Sets the output directory for the code coverage report. -->
-                            <outputDirectory>${jacoco-execution-ut-reports-dir}</outputDirectory>
-                            <skip>${skipUnitTests}</skip>
-                        </configuration>
-                    </execution>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
-                    <!--
-                        Prepares the property pointing to the JaCoCo runtime agent which
-                        is passed as VM argument when Maven the Failsafe plugin is executed.
-                    -->
-                    <execution>
-                        <id>pre-integration-test</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Sets the path to the file which contains the execution data. -->
-                            <destFile>${jacoco-execution-it-data-file}</destFile>
-                            <!--
-                                Sets the name of the property containing the settings for JaCoCo runtime agent.
-                            -->
-                            <!-- same as for the surefire plugin (argLine); asked by the team for easier IDE support
-                            <propertyName>failsafeArgLine</propertyName>
-                            -->
-                            <propertyName>${jacoco-execution-it-argLine-property-name}</propertyName>
-                            <skip>${skipITs}</skip>
-                        </configuration>
-                    </execution>
-                    <!--
-                        Ensures that the code coverage report for integration tests after
-                        integration tests have been run.
-                    -->
-                    <execution>
-                        <id>post-integration-test</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Sets the path to the file which contains the execution data. -->
-                            <dataFile>${jacoco-execution-it-data-file}</dataFile>
-                            <!-- Sets the output directory for the code coverage report. -->
-                            <outputDirectory>${jacoco-execution-it-reports-dir}</outputDirectory>
-                            <skip>${skipITs}</skip>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>post-integration-test-merge</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>merge</goal>
-                        </goals>
-                        <configuration>
-                            <fileSets>
-                                <fileSet>
-                                    <directory>${jacoco-execution-data-file-parent-dir}</directory>
-                                    <includes>
-                                        <include>${jacoco-execution-ut-data-filename}</include>
-                                        <include>${jacoco-execution-it-data-filename}</include>
-                                    </includes>
-                                </fileSet>
-                            </fileSets>
-                            <!-- Sets the path to the file which contains the execution data. -->
-                            <destFile>${jacoco-execution-all-tests-data-file}</destFile>
-                            <!-- Rem: no skip property evaluation needed here: it takes what it founds. -->
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>post-integration-test-after-merge</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Sets the path to the file which contains the execution data. -->
-                            <dataFile>${jacoco-execution-all-tests-data-file}</dataFile>
-                            <!-- Sets the output directory for the code coverage report. -->
-                            <outputDirectory>${jacoco-execution-all-tests-reports-dir}</outputDirectory>
-                            <!-- Rem: no skip property evaluation needed here: it takes what it founds. -->
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -257,7 +138,6 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<jvmArguments>${argLine}</jvmArguments>
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>
