@@ -1,7 +1,5 @@
 package com.covid19.covid19api.controller;
 
-import static org.springframework.http.HttpStatus.OK;
-
 import java.util.List;
 
 import javax.validation.Valid;
@@ -11,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.covid19.covid19api.request.CovidDataRequest;
@@ -46,7 +43,6 @@ public class CovidController {
 
 	}
 
-	@ResponseStatus( OK )
 	@GetMapping( "/getByThreshold" )
 	public ResponseEntity<List<CovidDataResponse>> getByThreshold( @Valid @NotNull Long threshold ) {
 
