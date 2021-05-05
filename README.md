@@ -25,8 +25,8 @@ The table below contains a list with all the endpoints available in Covid Servic
 The Elastisearch index(covid19) used by the Covid Service API
 
 # Improvement
-Can use some ETL tool like logstash, Nifi for reading and processing the csv file
-Can use some streaming like Spark Streaming or Kafka Streaming here 
+Can use some ETL tool like logstash, Nifi for reading and processing the csv file.
+Can use some streaming like Spark Streaming or Kafka Streaming here. 
 
 # Examples of Endpoint Request
 localhost:8080/api/covid/getByLocation?latitude=33.93911&longitude=67.709953&distanceInKm=1000&totalPopulation=1000&threshHold=30
